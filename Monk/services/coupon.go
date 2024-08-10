@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"monk_commerce/models"
 	"strings"
 
@@ -134,7 +135,6 @@ func (cs *CouponServices) GetApplicableCoupons(cart models.Cart) ([]models.Appli
 				if productID, ok := coupon.Details["product_id"].(string); ok && item.ProductID == productID {
 					var discountAmount float64
 
-					// Calculate discount based on DiscountType (percentage or flat)
 					if coupon.DiscountType == "percentage" {
 						discountAmount = item.Price * (coupon.Discount / 100) * float64(item.Quantity)
 					} else if coupon.DiscountType == "flat" {
@@ -143,7 +143,6 @@ func (cs *CouponServices) GetApplicableCoupons(cart models.Cart) ([]models.Appli
 
 					if discountAmount > 0 {
 
-						// Generate Coupon Code if not available
 						if coupon.CuponCode == "" {
 							if coupon.Name == "" {
 								coupon.Name = "DIS"
@@ -246,15 +245,11 @@ func GenerateCouponCode(name string, discount float64) string {
 	return couponcode
 }
 
-// coupon_service.go
-
-// coupon_service.go
 func (cs *CouponServices) ApplyAllCoupons(cart models.Cart, coupons []models.Coupon) (models.UpdatedCart, error) {
 	var updatedCart models.UpdatedCart
 	updatedCart.Items = cart.Items
 	totalDiscount := 0.0
 
-	// Apply Product-wise Discounts
 	for _, coupon := range coupons {
 		if coupon.Type == "product-wise" {
 			for i, item := range updatedCart.Items {
@@ -267,7 +262,6 @@ func (cs *CouponServices) ApplyAllCoupons(cart models.Cart, coupons []models.Cou
 		}
 	}
 
-	// Apply BXGY Discounts
 	for _, coupon := range coupons {
 		if coupon.Type == "bxgy" {
 			buyProducts, ok := coupon.Details["buy_products"].([]interface{})
@@ -293,7 +287,6 @@ func (cs *CouponServices) ApplyAllCoupons(cart models.Cart, coupons []models.Cou
 				return updatedCart, fmt.Errorf("invalid type for repetition_limit")
 			}
 
-			// Calculate Repetitions
 			buyCount := make(map[string]int)
 			for _, buyProduct := range buyProducts {
 				buyProductMap := buyProduct.(map[string]interface{})
@@ -307,7 +300,6 @@ func (cs *CouponServices) ApplyAllCoupons(cart models.Cart, coupons []models.Cou
 				repetitions = int(repetitionLimit)
 			}
 
-			// Apply Get Products Discounts
 			for _, getProduct := range getProducts {
 				getProductMap := getProduct.(map[string]interface{})
 				productID := getProductMap["product_id"].(string)
@@ -325,7 +317,6 @@ func (cs *CouponServices) ApplyAllCoupons(cart models.Cart, coupons []models.Cou
 		}
 	}
 
-	// Apply Cart-wise Discounts
 	for _, coupon := range coupons {
 		if coupon.Type == "cart-wise" {
 			totalCartPrice := calculateCartPrice(updatedCart.Items)
@@ -336,7 +327,6 @@ func (cs *CouponServices) ApplyAllCoupons(cart models.Cart, coupons []models.Cou
 		}
 	}
 
-	// Calculate final price and total discount
 	updatedCart.TotalPrice = calculateCartPrice(updatedCart.Items)
 	updatedCart.TotalDiscount = totalDiscount
 	updatedCart.FinalPrice = updatedCart.TotalPrice - totalDiscount
@@ -344,18 +334,8 @@ func (cs *CouponServices) ApplyAllCoupons(cart models.Cart, coupons []models.Cou
 	return updatedCart, nil
 }
 
-// Helper function to calculate the total price of items in the cart
-// func calculateCartPrice(items []models.CartItem) float64 {
-// 	total := 0.0
-// 	for _, item := range items {
-// 		total += float64(item.Quantity) * item.Price
-// 	}
-// 	return total
-// }
-
-// Helper function to calculate the minimum number of repetitions for BXGY discounts
 func GetMinimunRepetitions(buyCount map[string]int, items []models.CartItem) int {
-	minReps := int(^uint(0) >> 1) // Set to maximum integer value
+	minReps := math.MaxInt32
 	for productID, requiredQty := range buyCount {
 		for _, item := range items {
 			if item.ProductID == productID {

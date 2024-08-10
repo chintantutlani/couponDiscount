@@ -106,9 +106,7 @@ func (cc *CouponController) ApplyCouponByID(ctx *gin.Context) {
 	var request struct {
 		Cart models.Cart `json:"cart"`
 	}
-	couponID := ctx.Param("id") // Extract coupon ID from URL
-
-	// Bind request body to request struct
+	couponID := ctx.Param("id")
 	if err := ctx.BindJSON(&request); err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request"})
@@ -121,8 +119,6 @@ func (cc *CouponController) ApplyCouponByID(ctx *gin.Context) {
 		return
 	}
 
-	// Apply the coupon
-	// Apply the coupon
 	updatedCart, err := cc.couponService.ApplyAllCoupons(request.Cart, []models.Coupon{*coupon})
 	if err != nil {
 		log.Println(err.Error())
@@ -130,7 +126,6 @@ func (cc *CouponController) ApplyCouponByID(ctx *gin.Context) {
 		return
 	}
 
-	// Return updated cart
 	ctx.JSON(http.StatusOK, gin.H{"updated_cart": updatedCart})
 }
 
