@@ -87,6 +87,21 @@ func (cp *CouponServices) UpdateCouponByID(id string, updateFields map[string]in
 	return nil
 }
 
+func (cp *CouponServices) DeleteCouponByID(id *string) error {
+
+	objectID, err := primitive.ObjectIDFromHex(*id)
+	if err != nil {
+		return err
+	}
+	filter := bson.D{primitive.E{Key: "_id", Value: objectID}}
+	result, _ := cp.couponcollection.DeleteOne(cp.ctx, filter)
+
+	if result.DeletedCount != 1 {
+		return errors.New("no matched document found for delete")
+	}
+	return nil
+}
+
 func (cs *CouponServices) GetApplicableCoupons(cart models.Cart) ([]models.ApplicableCoupon, error) {
 
 	var applicableCoupons []models.ApplicableCoupon

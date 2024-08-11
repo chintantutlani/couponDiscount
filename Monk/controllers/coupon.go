@@ -71,7 +71,6 @@ func (cp *CouponController) UpdateCouponByID(ctx *gin.Context) {
 		return
 	}
 
-	// Define the allowed fields for update
 	allowedFields := map[string]bool{
 		"name":                 true,
 		"code":                 false,
@@ -104,6 +103,17 @@ func (cp *CouponController) UpdateCouponByID(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Coupon updated successfully"})
+}
+
+func (cp *CouponController) DeleteCouponByID(ctx *gin.Context) {
+	var couponid string = ctx.Param("id")
+	err := cp.couponService.DeleteCouponByID(&couponid)
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Coupon deleted successfully"})
 }
 
 func (cp *CouponController) GetApplicableCoupons(ctx *gin.Context) {
@@ -161,6 +171,7 @@ func (c CouponController) RegisterCouponRoutes(rg *gin.RouterGroup) {
 	rg.GET("/coupons", c.GetAll)
 	rg.GET("/coupons/:id", c.GetCouponById)
 	rg.PUT("/coupons/:id", c.UpdateCouponByID)
+	rg.DELETE("/coupons/:id", c.DeleteCouponByID)
 	rg.POST("/applicable-coupons", c.GetApplicableCoupons)
 	rg.POST("/apply-coupon/:id", c.ApplyCouponByID)
 
