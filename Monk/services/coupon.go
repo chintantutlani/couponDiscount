@@ -254,9 +254,18 @@ func (cs *CouponServices) ApplyAllCoupons(cart models.Cart, coupons []models.Cou
 		if coupon.Type == "product-wise" {
 			for i, item := range updatedCart.Items {
 				if productID, ok := coupon.Details["product_id"].(string); ok && item.ProductID == productID {
-					itemDiscount := item.Price * (coupon.Details["discount"].(float64) / 100) * float64(item.Quantity)
-					updatedCart.Items[i].TotalDiscount += itemDiscount
-					totalDiscount += itemDiscount
+					var discountAmount float64
+
+					if coupon.DiscountType == "percentage" {
+						discountAmount = item.Price * (coupon.Discount / 100) * float64(item.Quantity)
+					} else if coupon.DiscountType == "flat" {
+						discountAmount = coupon.Discount * float64(item.Quantity)
+					}
+
+					if discountAmount > 0 {
+						updatedCart.Items[i].TotalDiscount += discountAmount
+						totalDiscount += discountAmount
+					}
 				}
 			}
 		}
@@ -318,10 +327,18 @@ func (cs *CouponServices) ApplyAllCoupons(cart models.Cart, coupons []models.Cou
 	}
 
 	for _, coupon := range coupons {
+
 		if coupon.Type == "cart-wise" {
 			totalCartPrice := calculateCartPrice(updatedCart.Items)
 			if totalCartPrice >= coupon.ThresholdValue {
-				cartDiscount := totalCartPrice * (coupon.Discount / 100)
+				var cartDiscount float64
+
+				if coupon.DiscountType == "percentage" {
+					cartDiscount = totalCartPrice * (coupon.Discount / 100)
+				} else if coupon.DiscountType == "flat" {
+					cartDiscount = coupon.Discount
+				}
+
 				totalDiscount += cartDiscount
 			}
 		}
