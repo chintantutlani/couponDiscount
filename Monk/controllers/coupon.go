@@ -107,7 +107,7 @@ func (cc *CouponController) ApplyCouponByID(ctx *gin.Context) {
 		Cart models.Cart `json:"cart"`
 	}
 	couponID := ctx.Param("id")
-	if err := ctx.BindJSON(&request); err != nil {
+	if err := ctx.ShouldBindJSON(&request); err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request"})
 		return
