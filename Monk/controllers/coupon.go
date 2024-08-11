@@ -70,6 +70,34 @@ func (cp *CouponController) UpdateCouponByID(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "No fields provided for update"})
 		return
 	}
+
+	// Define the allowed fields for update
+	allowedFields := map[string]bool{
+		"name":                 true,
+		"code":                 false,
+		"maxuses":              false,
+		"type":                 false,
+		"details":              false,
+		"discount":             false,
+		"description":          true,
+		"condition":            true,
+		"discount_type":        false,
+		"threshold_value":      false,
+		"expiry_date":          false,
+		"free_shipping":        false,
+		"use_limit":            false,
+		"usage_limit_per_user": false,
+		"maximum_amount":       false,
+	}
+
+	for key := range updateFields {
+		if !allowedFields[key] {
+			log.Printf("Field '%s' is not allowed for update", key)
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "Field '" + key + "' is not allowed for update"})
+			return
+		}
+	}
+
 	err := cp.couponService.UpdateCouponByID(id, updateFields)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -85,8 +113,6 @@ func (cp *CouponController) GetApplicableCoupons(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-
-	log.Println("this is my cart", cart)
 
 	applicableCoupons, err := cp.couponService.GetApplicableCoupons(cart)
 	if err != nil {

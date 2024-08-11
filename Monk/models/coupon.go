@@ -3,17 +3,23 @@ package models
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Coupon struct {
-	Id             primitive.ObjectID     `json:"id,omitempty" bson:"_id,omitempty"`
-	Name           string                 `json:"name" bson:"name"`
-	CuponCode      string                 `json:"code" bson:"code"`
-	Maxuses        int                    `json:"maxuses" bson:"maxuses"`
-	Type           string                 `json:"type" bson:"type"`
-	Details        map[string]interface{} `json:"details" bson:"details"`
-	Discount       float64                `json:"discount" bson:"discount"`
-	Description    string                 `json:"description" bson:"description"`
-	Condition      string                 `json:"condition" bson:"condition"`
-	DiscountType   string                 `json:"discount_type" bson:"discount_type"`
-	ThresholdValue float64                `json:"threshold_value" bson:"threshold_value"`
+	Id                primitive.ObjectID     `json:"id,omitempty" bson:"_id,omitempty"`
+	Name              string                 `json:"name" bson:"name"`
+	CuponCode         string                 `json:"code" bson:"code"`
+	Maxuses           int                    `json:"maxuses" bson:"maxuses"`
+	Type              string                 `json:"type" bson:"type"`
+	Details           map[string]interface{} `json:"details" bson:"details"`
+	Discount          float64                `json:"discount" bson:"discount"`
+	Description       string                 `json:"description" bson:"description"`
+	Condition         string                 `json:"condition" bson:"condition"`
+	DiscountType      string                 `json:"discount_type" bson:"discount_type"`
+	ThresholdValue    float64                `json:"threshold_value" bson:"threshold_value"`
+	UserId            string                 `json:"user_id" bson:"user_id"`                           // unused
+	ExpiryDate        string                 `json:"expiry_date" bson:"expiry_date"`                   // unused
+	FreeShipping      bool                   `json:"free_shipping" bson:"free_shipping"`               // unused
+	Uselimity         bool                   `json:"use_limit" bson:"use_limit"`                       // unused
+	UsageLimitPerUser int                    `json:"usage_limit_per_user" bson:"usage_limit_per_user"` // unused
+	MaximunAmount     float64                `json:"maximun_amount" bson:"maximum_amount"`             // unused
 }
 
 type Cart struct {
