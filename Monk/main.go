@@ -66,15 +66,7 @@ func main() {
 	basepath := server.Group("/v1")
 	cc.RegisterCouponRoutes(basepath)
 
-	// addr := fmt.Sprintf(":%d", config.Server.Port)
-	// if !config.Server.Secure {
-	// 	server.Run(addr)
-	// } else {
-
-	// 	log.Fatal("address or port is not secure/found ")
-	// }
-
-	err := server.Run("localhost:8000")
+	err := server.Run("localhost:8080")
 	if err != nil {
 		log.Fatal("not able to start server ,", err)
 	}
