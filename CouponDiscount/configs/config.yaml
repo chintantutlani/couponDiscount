@@ -1,4 +1,0 @@
-database:
-  db : "monk-commerce"
-  couponcollection : "coupon"
-  
